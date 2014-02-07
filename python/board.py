@@ -6,6 +6,7 @@ class Board:
         Initializes a n by n by n board as a 3D array
         """
         self.board = []
+        self.remaining = []
         self.n = n
 
         for x in range(0, n):
@@ -14,18 +15,14 @@ class Board:
                 self.board[x].append([])
                 for z in range(0, n):
                     self.board[x][y].append(0)
+                    self.remaining.append((x, y, z))
 
     def roll(self):
         """
-        Simulates 3 rolls of the die and returns a tuple with the
-        results
+        Selects a random element from the non-selected items
         """
-        # TODO: This is naive. Need to make this take placed points into account
-        x = random.randrange(self.n)
-        y = random.randrange(self.n)
-        z = random.randrange(self.n)
-
-        return (x, y, z)
+        i = random.randrange(0, len(self.remaining))
+        return self.remaining.pop(i)
     
     def getPoint(self, x, y, z):
         """
@@ -39,19 +36,29 @@ class Board:
         """
         self.board[x][y][z] = val
 
-    def place(self):
+    def runTurn(self):
         """
         Rolls the die and places a piece on the selected place within
-        the board.
+        the board. Returns true if there is a win after this turn, false
+        otherwise
         """
-        current = 1
-        point = self.roll() 
-        # TODO: We won't have to do this when we have a smarter die
-        while current != 0:
-            point = self.roll()
-            current = self.getPoint(*point)
-
+        point = self.roll()
         self.setPoint(point[0], point[1], point[2], 1)
+
+        return self.checkWin(point)
+
+    def getTurns(self):
+        """
+        Returns the number of turns made on this board
+        """
+        return self.n^3 - len(self.remaining)
+
+    def checkWin(self, point):
+        """
+        Given a point, this checks to see if there is a win around it
+        """
+        # TODO
+        return False
 
     def __str__(self):
         """
