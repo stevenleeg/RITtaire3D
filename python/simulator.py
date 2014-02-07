@@ -14,8 +14,10 @@ def main():
 
         if b.remaining == 0:
             print "Done! No win for n=%d" % n
+            print b
         else:
             print "Done! Finished after %d turns" % b.getTurns()
+            print b
 
 if __name__ == "__main__":
     main()

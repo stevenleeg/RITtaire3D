@@ -51,13 +51,13 @@ class Board:
         """
         Returns the number of turns made on this board
         """
-        return self.n^3 - len(self.remaining)
+        return self.n**3 - len(self.remaining)
 
     def checkWin(self, point):
         """
         Given a point, this checks to see if there is a win around it
         """
-        # TODO
+        
         return False
 
     def __str__(self):
