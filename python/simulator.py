@@ -1,27 +1,28 @@
 from board import Board
 import datetime
 
-N_START = 1
-N_END = 40
+N_START = 2
+N_END = 4
 
 def main():   
     total_turns = 0
     start_dt = datetime.datetime.now()
-    for n in range(N_START, N_END):
-        print "Simulating at n=%d..." % n
-        b = Board(n)
+
+    for board_size in range(N_START, N_END):
+        print "Simulating at n=%d..." % board_size
+        b = Board(board_size)
+
         while len(b.remaining) > 0:
             if b.runTurn():
                 break
 
         turns = b.getTurns()
         total_turns += turns
-        if b.remaining == 0:
-            print "Done! No win for n=%d" % n
-            #print b
+        if len(b.remaining) == 0:
+            print "Done! No win for n=%d" % board_size
         else:
             print "Done! Finished after %d turns" % turns
-            #print b
+            print b
 
     end_dt = datetime.datetime.now()
     delta = end_dt - start_dt 

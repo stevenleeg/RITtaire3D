@@ -7,7 +7,10 @@ class Board:
         """
         self.board = []
         self.remaining = []
+        self.directions = []
         self.n = n
+
+        self.generateDirectionalConstants()
 
         for x in range(0, n):
             self.board.append([])
@@ -16,6 +19,18 @@ class Board:
                 for z in range(0, n):
                     self.board[x][y].append(0)
                     self.remaining.append((x, y, z))
+
+    def generateDirectionalConstants(self):
+        """
+        Generates a list of tuples for every possible direction we
+        could go in. Eg, the direction straight up would be (0, 1, 0)
+        """
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                for z in range(-1, 2):
+                    if x == 0 and y == 0 and z == 0:
+                        break
+                    self.directions.append((x, y, z))
 
     def roll(self):
         """
@@ -53,11 +68,63 @@ class Board:
         """
         return self.n**3 - len(self.remaining)
 
+    def validPoint(self, point):
+        """
+        Checks to see if a point is valid on the current board. 
+        Returns True/False.
+        """
+        for coord in point:
+            if coord >= self.n or coord < 0:
+                return False
+
+        return True
+    
+    def onEdge(self, point):
+        for coord in point:
+            if coord == (self.n - 1) or coord == 0:
+                return True
+
     def checkWin(self, point):
         """
         Given a point, this checks to see if there is a win around it
         """
-        
+        remaining = {}
+        complete_lines = []
+        for direction in self.directions:
+            remaining[direction] = None
+
+        while len(remaining) != 0:
+            for direction, check_point in remaining.items():
+                # For the first point
+                if check_point == None: 
+                    check_point = point
+
+                next_point = (check_point[0] + direction[0],
+                              check_point[1] + direction[1],
+                              check_point[2] + direction[2])
+
+                # If the point is invalid then we're done here
+                if not self.validPoint(next_point):
+                    del(remaining[direction])
+                    continue
+
+                # We should keep following this line
+                if self.getPoint(*next_point) == 1:
+                    remaining[direction] = next_point
+
+                    # If it's on the edge, we have 1/2 of a complete line
+                    if self.onEdge(next_point):
+                        complete_lines.append(direction)
+
+                        # Check for a win
+                        opposite = tuple([d * -1 for d in direction])
+                        if opposite in complete_lines:
+                            return True
+
+                        del(remaining[direction])
+                else:
+                    del(remaining[direction])
+
         return False
 
     def __str__(self):
