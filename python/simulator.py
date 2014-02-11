@@ -1,7 +1,7 @@
 from board import Board
 import datetime
 
-N_START = 2
+N_START = 3
 N_END = 4
 
 def main():   
@@ -21,8 +21,8 @@ def main():
         if len(b.remaining) == 0:
             print "Done! No win for n=%d" % board_size
         else:
-            print "Done! Finished after %d turns" % turns
             print b
+            print "Done! Finished after %d turns" % turns
 
     end_dt = datetime.datetime.now()
     delta = end_dt - start_dt 
