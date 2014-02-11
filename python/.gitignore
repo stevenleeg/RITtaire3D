@@ -2,3 +2,6 @@ bin
 include
 lib
 *.pyc
+python
+man
+result_images

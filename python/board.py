@@ -1,3 +1,4 @@
+from PIL import Image, ImageDraw
 import random
 
 class Board:
@@ -9,6 +10,7 @@ class Board:
         self.remaining = []
         self.directions = []
         self.n = n
+        self.winning_line = []
 
         self.generateDirectionalConstants()
 
@@ -84,6 +86,18 @@ class Board:
             if coord == (self.n - 1) or coord == 0:
                 return True
 
+    def generateWinningLine(self, direction, point):
+        """
+        Generates a winning line given a direction and a point
+        """
+        direction = tuple([d * -1 for d in direction])
+
+        while self.validPoint(point):
+            self.winning_line.append(point)
+            point = (point[0] + direction[0],
+                     point[1] + direction[1],
+                     point[2] + direction[2])
+
     def checkWin(self, point):
         """
         Given a point, this checks to see if there is a win around it
@@ -119,6 +133,7 @@ class Board:
                         # Check for a win
                         opposite = tuple([d * -1 for d in direction])
                         if opposite in complete_lines:
+                            self.generateWinningLine(direction, next_point)
                             return True
 
                         del(remaining[direction])
@@ -140,3 +155,32 @@ class Board:
                     string += "(%d, %d, %d): %d\n" % (x, y, z, self.board[x][y][z])
 
         return string
+    
+    def renderImage(self):
+        """
+        This returns a PIL image of a graphical representation of the board.
+        """
+        SQUARE_SIZE = 30
+
+        width = (self.n * SQUARE_SIZE) + 1
+        height = ((self.n * SQUARE_SIZE) * self.n) + (self.n * SQUARE_SIZE) + 1
+
+        image = Image.new("RGB", (width, height), color=(255, 255, 255))
+        d = ImageDraw.Draw(image)
+
+        for x, val in enumerate(self.board):
+            for y, val in enumerate(self.board[x]):
+                for z, val in enumerate(self.board[x][y]):
+                    rx = x * SQUARE_SIZE
+                    ry = (z * self.n * SQUARE_SIZE) + (y * SQUARE_SIZE) + (z * SQUARE_SIZE)
+
+                    color = (238, 238, 238)
+                    if (x, y, z) in self.winning_line:
+                        color = (0, 180, 255)
+                    elif val == 1:
+                        color = (81, 81, 81)
+                    d.rectangle((rx, ry, rx+SQUARE_SIZE, ry+SQUARE_SIZE), fill=color, outline=(255, 255, 255))
+
+        del d
+
+        return image

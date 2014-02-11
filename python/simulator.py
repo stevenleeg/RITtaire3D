@@ -1,8 +1,8 @@
 from board import Board
 import datetime
 
-N_START = 3
-N_END = 4
+N_START = 4
+N_END = 5
 
 def main():   
     total_turns = 0
@@ -21,8 +21,9 @@ def main():
         if len(b.remaining) == 0:
             print "Done! No win for n=%d" % board_size
         else:
-            print b
             print "Done! Finished after %d turns" % turns
+            image = b.renderImage()
+            image.save("output.png")
 
     end_dt = datetime.datetime.now()
     delta = end_dt - start_dt 
