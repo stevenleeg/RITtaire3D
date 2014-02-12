@@ -90,57 +90,51 @@ class Board:
         """
         Generates a winning line given a direction and a point
         """
-        direction = tuple([d * -1 for d in direction])
-
         while self.validPoint(point):
             self.winning_line.append(point)
             point = (point[0] + direction[0],
                      point[1] + direction[1],
                      point[2] + direction[2])
 
-    def checkWin(self, point):
+
+    def checkWin(self, first_point):
         """
         Given a point, this checks to see if there is a win around it
         """
-        remaining = {}
-        complete_lines = []
+        complete_lines = {}
         for direction in self.directions:
-            remaining[direction] = None
-
-        while len(remaining) != 0:
-            for direction, check_point in remaining.items():
-                # For the first point
-                if check_point == None: 
-                    check_point = point
-
-                next_point = (check_point[0] + direction[0],
-                              check_point[1] + direction[1],
-                              check_point[2] + direction[2])
-
-                # If the point is invalid then we're done here
-                if not self.validPoint(next_point):
-                    del(remaining[direction])
+            point = first_point
+            cont = True
+            s = -1
+            while cont and self.validPoint(point):
+                # Streak is over :(
+                if self.getPoint(*point) != 1:
+                    cont = False
                     continue
 
-                # We should keep following this line
-                if self.getPoint(*next_point) == 1:
-                    remaining[direction] = next_point
+                s += 1
+                point = (point[0] + direction[0],
+                         point[1] + direction[1],
+                         point[2] + direction[2])
 
-                    # If it's on the edge, we have 1/2 of a complete line
-                    if self.onEdge(next_point):
-                        complete_lines.append(direction)
-
-                        # Check for a win
-                        opposite = tuple([d * -1 for d in direction])
-                        if opposite in complete_lines:
-                            self.generateWinningLine(direction, next_point)
-                            return True
-
-                        del(remaining[direction])
-                else:
-                    del(remaining[direction])
+            point = (point[0] - direction[0],
+                     point[1] - direction[1],
+                     point[2] - direction[2])
+            complete_lines[direction] = s
+            opposite = tuple([d * -1 for d in direction])
+            if s == (self.n - 1):
+                self.generateWinningLine(opposite, point)
+                return True
+            elif opposite in complete_lines and s + complete_lines[opposite] == (self.n - 1):
+                self.generateWinningLine(opposite, point)
+                return True
 
         return False
+
+    def simulate(self):
+        while len(self.remaining) > 0:
+            if self.runTurn():
+                break
 
     def __str__(self):
         """
