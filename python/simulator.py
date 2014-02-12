@@ -3,7 +3,7 @@ import datetime
 
 SAVE_IMAGE = False
 
-SIMULATIONS = 100
+SIMULATIONS = 3
 N_START = 3
 N_END = 16
 
@@ -33,7 +33,7 @@ def main():
         print "finished simulation %d" % simulation
     
     for n, total in nturns.items():
-        print "Avg for %d is %f" % (n, total / SIMULATIONS)
+        print "Avg for %d is %f" % (n, float(total) / float(SIMULATIONS))
 
     end_dt = datetime.datetime.now()
     delta = end_dt - start_dt 
