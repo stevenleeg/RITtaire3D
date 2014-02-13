@@ -2,6 +2,10 @@ from PIL import Image, ImageDraw
 import random
 
 class Board:
+    """
+    Represents a board of RITtaire3D
+    """
+
     def __init__(self, n):
         """
         Initializes a n by n by n board as a 3D array
@@ -40,13 +44,13 @@ class Board:
         """
         i = random.randrange(0, len(self.remaining))
         return self.remaining.pop(i)
-    
+
     def getPoint(self, x, y, z):
         """
         Returns the data at point x, y, z on the board
         """
         return self.board[x][y][z]
-    
+
     def setPoint(self, x, y, z, val):
         """
         Sets a point on the board
@@ -72,7 +76,7 @@ class Board:
 
     def validPoint(self, point):
         """
-        Checks to see if a point is valid on the current board. 
+        Checks to see if a point is valid on the current board.
         Returns True/False.
         """
         for coord in point:
@@ -80,8 +84,11 @@ class Board:
                 return False
 
         return True
-    
+
     def onEdge(self, point):
+        """
+        Calculates whether or not this point is on an edge of the cube
+        """
         for coord in point:
             if coord == (self.n - 1) or coord == 0:
                 return True
@@ -105,14 +112,14 @@ class Board:
         for direction in self.directions:
             point = first_point
             cont = True
-            s = -1
+            streak = -1
             while cont and self.validPoint(point):
                 # Streak is over :(
                 if self.getPoint(*point) != 1:
                     cont = False
                     continue
 
-                s += 1
+                streak += 1
                 point = (point[0] + direction[0],
                          point[1] + direction[1],
                          point[2] + direction[2])
@@ -120,18 +127,23 @@ class Board:
             point = (point[0] - direction[0],
                      point[1] - direction[1],
                      point[2] - direction[2])
-            complete_lines[direction] = s
+            complete_lines[direction] = streak
             opposite = tuple([d * -1 for d in direction])
-            if s == (self.n - 1):
+            if streak == (self.n - 1):
                 self.generateWinningLine(opposite, point)
                 return True
-            elif opposite in complete_lines and s + complete_lines[opposite] == (self.n - 1):
+            elif(opposite in complete_lines and
+                    streak + complete_lines[opposite] == (self.n - 1)):
                 self.generateWinningLine(opposite, point)
                 return True
 
         return False
 
     def simulate(self):
+        """
+        Runs through a complete simulation of the game, stopping
+        only if there is a win or the entire board is full
+        """
         while len(self.remaining) > 0:
             if self.runTurn():
                 break
@@ -149,7 +161,7 @@ class Board:
                     string += "(%d, %d, %d): %d\n" % (x, y, z, self.board[x][y][z])
 
         return string
-    
+
     def renderImage(self):
         """
         This returns a PIL image of a graphical representation of the board.
@@ -166,15 +178,18 @@ class Board:
             for y, val in enumerate(self.board[x]):
                 for z, val in enumerate(self.board[x][y]):
                     rx = x * SQUARE_SIZE
-                    ry = (z * self.n * SQUARE_SIZE) + (y * SQUARE_SIZE) + (z * SQUARE_SIZE)
+                    ry = (z * self.n * SQUARE_SIZE) + (y * SQUARE_SIZE) \
+                        + (z * SQUARE_SIZE)
 
                     color = (238, 238, 238)
                     if (x, y, z) in self.winning_line:
                         color = (0, 180, 255)
                     elif val == 1:
                         color = (81, 81, 81)
-                    d.rectangle((rx, ry, rx+SQUARE_SIZE, ry+SQUARE_SIZE), fill=color, outline=(255, 255, 255))
 
+                    d.rectangle((rx, ry, rx+SQUARE_SIZE, ry+SQUARE_SIZE),
+                            fill=color,
+                            outline=(255, 255, 255))
         del d
 
         return image
