@@ -154,11 +154,19 @@ class Board:
         will have to do. This special function lets you do print(my_board)
         and have it come out looking pretty.
         """
-        string = ""
-        for x, val in enumerate(self.board):
-            for y, val in enumerate(self.board[x]):
-                for z, val in enumerate(self.board[x][y]):
-                    string += "(%d, %d, %d): %d\n" % (x, y, z, self.board[x][y][z])
+        string = "Board size: %d" % self.n
+        current_z = 0
+        for z in range(0, self.n):
+            string += "\n"
+            for y in range(0, self.n):
+                for x in range(0, self.n):
+                    if (x, y, z) in self.winning_line:
+                        string += "[x] "
+                    elif(self.board[x][y][z] == 1):
+                        string += "[o] "
+                    else:
+                        string += "[ ] "
+                string += "\n"
 
         return string
 
