@@ -69,11 +69,15 @@ def main():
             else:
                 nturns[board_size] = turns
 
-        print "Finished simulation %d" % simulation
+            if simulations == 1:
+                print "Finished board size %d" % board_size
+
+        print "Finished simulation %d" % (simulation + 1)
 
     # Calculate averages
+    print
     for board_size, total in nturns.items():
-        print "\nAvg for %d is %f" % (
+        print "Avg for %d is %f" % (
             board_size, float(total) / float(simulations))
 
     # More benchmarks

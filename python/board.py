@@ -154,7 +154,8 @@ class Board:
         will have to do. This special function lets you do print(my_board)
         and have it come out looking pretty.
         """
-        string = "Board size: %d" % self.n
+        string = "Board size: %d\n" % self.n
+        string += "Turns:      %d" % self.getTurns()
         current_z = 0
         for z in range(0, self.n):
             string += "\n"
