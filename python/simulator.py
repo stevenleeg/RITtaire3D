@@ -6,6 +6,8 @@ parser.add_argument("-n", metavar="N", dest="n", type=int,
     help="Runs one simulation with board size n")
 parser.add_argument("-o", dest="save_image", action="store_true",
     help="Outputs a graphical representation of the board (to output.png)")
+parser.add_argument("--ascii", dest="ascii", action="store_true",
+    help="Outputs an ASCII representation of each board being simulated")
 parser.add_argument("-s", metavar="N", dest="start", type=int,
     help="Begin simulated range at this board size (inclusive).")
 parser.add_argument("-e", metavar="N", dest="end", type=int,
@@ -59,6 +61,8 @@ def main():
             if args.save_image:
                 image = board.renderImage()
                 image.save("output.png")
+            if args.ascii:
+                print board
 
             if board_size in nturns:
                 nturns[board_size] += turns
