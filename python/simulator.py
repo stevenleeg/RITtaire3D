@@ -40,7 +40,9 @@ def main():
     # Benchmarks
     total_turns = 0
     start_dt = datetime.datetime.now()
-    nturns = {}
+    n_turns   = {}
+    max_turns = {}
+    min_turns = {}
 
     if n_start == n_end:
         print "Running size n=%d for %d simulations" % (n_start, simulations)
@@ -64,10 +66,23 @@ def main():
             if args.ascii:
                 print board
 
-            if board_size in nturns:
-                nturns[board_size] += turns
+            # Add to number of turns for board size
+            if board_size in n_turns:
+                n_turns[board_size] += turns
             else:
-                nturns[board_size] = turns
+                n_turns[board_size] = turns
+
+            # Is this the max number of turns we've dealt with?
+            if board_size in max_turns and turns > max_turns[board_size]:
+                max_turns[board_size] = turns
+            elif board_size not in max_turns:
+                max_turns[board_size] = turns
+
+            # Is this the min number of turns we've dealt with?
+            if board_size in min_turns and turns < min_turns[board_size]:
+                min_turns[board_size] = turns
+            elif board_size not in min_turns:
+                min_turns[board_size] = turns
 
             if simulations == 1:
                 print "Finished board size %d" % board_size
@@ -76,9 +91,11 @@ def main():
 
     # Calculate averages
     print
-    for board_size, total in nturns.items():
+    for board_size, total in n_turns.items():
         print "Avg for %d is %f" % (
             board_size, float(total) / float(simulations))
+        print "Max for %d is %d" % (board_size, max_turns[board_size])
+        print "Min for %d is %d" % (board_size, min_turns[board_size])
 
     # More benchmarks
     end_dt = datetime.datetime.now()
