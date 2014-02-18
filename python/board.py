@@ -1,4 +1,7 @@
-from PIL import Image, ImageDraw
+try:
+    from PIL import Image, ImageDraw
+except ImportError:
+    pass
 import random
 
 class Board:
