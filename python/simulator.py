@@ -92,10 +92,11 @@ def main():
     # Calculate averages
     print
     for board_size, total in n_turns.items():
-        print "Avg for %d is %f" % (
-            board_size, float(total) / float(simulations))
-        print "Max for %d is %d" % (board_size, max_turns[board_size])
-        print "Min for %d is %d" % (board_size, min_turns[board_size])
+        print "Stats for n=%d" % board_size
+        print "\tAvg: %f" % (float(total) / float(simulations))
+        print "\tMax: %d" % max_turns[board_size]
+        print "\tMin: %d" % min_turns[board_size]
+        print
 
     # More benchmarks
     end_dt = datetime.datetime.now()
