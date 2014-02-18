@@ -37,12 +37,20 @@ def main():
         parser.print_help()
         return
 
+    if (args.start != None or args.end != None) and args.n != None:
+        print "You cannot specify a range and a single board size!\n"
+        parser.print_help()
+        return
+
+    if args.save_image and (args.simulations > 1 or args.n == None):
+        print "You can only output images for single simulation runs\n"
+        parser.print_help()
+        return
+
     # Benchmarks
     total_turns = 0
     start_dt = datetime.datetime.now()
-    n_turns   = {}
-    max_turns = {}
-    min_turns = {}
+    stats = {}
 
     if n_start == n_end:
         print "Running size n=%d for %d simulations" % (n_start, simulations)
@@ -60,42 +68,47 @@ def main():
 
             turns = board.getTurns()
             total_turns += turns
-            if args.save_image:
-                image = board.renderImage()
-                image.save("output.png")
-            if args.ascii:
-                print board
+            if board_size not in stats:
+                stats[board_size] = {
+                    "turns": 0,
+                    "min": -1,
+                    "max": -1,
+                    "win_types": [0, 0, 0],
+                }
 
             # Add to number of turns for board size
-            if board_size in n_turns:
-                n_turns[board_size] += turns
-            else:
-                n_turns[board_size] = turns
+            stats[board_size]["turns"] += turns
 
-            # Is this the max number of turns we've dealt with?
-            if board_size in max_turns and turns > max_turns[board_size]:
-                max_turns[board_size] = turns
-            elif board_size not in max_turns:
-                max_turns[board_size] = turns
+            # Is this the max/min number of turns we've dealt with?
+            if turns > stats[board_size]["max"]:
+                stats[board_size]["max"] = turns
+            if turns < stats[board_size]["min"] or stats[board_size]["min"] == -1:
+                stats[board_size]["min"] = turns
 
-            # Is this the min number of turns we've dealt with?
-            if board_size in min_turns and turns < min_turns[board_size]:
-                min_turns[board_size] = turns
-            elif board_size not in min_turns:
-                min_turns[board_size] = turns
+            # Add to the win type
+            stats[board_size]["win_types"][board.win_type] += 1
 
+            if args.ascii:
+                print board
             if simulations == 1:
+                if args.save_image:
+                    image = board.renderImage()
+                    image.save("output.png")
                 print "Finished board size %d" % board_size
 
         print "Finished simulation %d" % (simulation + 1)
 
     # Calculate averages
     print
-    for board_size, total in n_turns.items():
+    print "--- Results after %d simulations ---" % simulations
+    for board_size, stat in stats.items():
         print "Stats for n=%d" % board_size
-        print "\tAvg: %f" % (float(total) / float(simulations))
-        print "\tMax: %d" % max_turns[board_size]
-        print "\tMin: %d" % min_turns[board_size]
+        print "\tAvg:          %f" % (float(stat["turns"]) / float(simulations))
+        print "\tMax:          %d" % stat["max"]
+        print "\tMin:          %d" % stat["min"]
+        print "\t3D diag wins: %d" % stat["win_types"][0]
+        print "\t2D diag wins: %d" % stat["win_types"][1]
+        print "\tAxis wins:    %d" % stat["win_types"][2]
         print
 
     # More benchmarks

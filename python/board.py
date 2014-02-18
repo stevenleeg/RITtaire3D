@@ -5,6 +5,9 @@ class Board:
     """
     Represents a board of RITtaire3D
     """
+    WIN_DIAG3D = 0
+    WIN_DIAG2D = 1
+    WIN_AXIS   = 2
 
     def __init__(self, n):
         """
@@ -15,6 +18,7 @@ class Board:
         self.directions = []
         self.n = n
         self.winning_line = []
+        self.win_type = 0
 
         self.generateDirectionalConstants()
 
@@ -94,10 +98,13 @@ class Board:
             if coord == (self.n - 1) or coord == 0:
                 return True
 
-    def generateWinningLine(self, direction, point):
+    def generateWinStats(self, direction, point):
         """
-        Generates a winning line given a direction and a point
+        Generates the winning line given a direction and a point,
+        also determins what kind of win this was (diag, x, y, etc.)
         """
+        self.win_type = list(direction).count(0)
+
         while self.validPoint(point):
             self.winning_line.append(point)
             point = (point[0] + direction[0],
@@ -131,11 +138,11 @@ class Board:
             complete_lines[direction] = streak
             opposite = tuple([d * -1 for d in direction])
             if streak == (self.n - 1):
-                self.generateWinningLine(opposite, point)
+                self.generateWinStats(opposite, point)
                 return True
             elif(opposite in complete_lines and
                     streak + complete_lines[opposite] == (self.n - 1)):
-                self.generateWinningLine(opposite, point)
+                self.generateWinStats(opposite, point)
                 return True
 
         return False
