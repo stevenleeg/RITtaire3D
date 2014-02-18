@@ -6,3 +6,6 @@ python
 man
 result_images
 output.png
+lib-python
+lib_pypy
+site-packages
