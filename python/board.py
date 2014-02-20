@@ -30,7 +30,7 @@ class Board:
             for y in range(0, n):
                 self.board[x].append([])
                 for z in range(0, n):
-                    self.board[x][y].append(0)
+                    self.board[x][y].append(False)
                     self.remaining.append((x, y, z))
 
     def generateDirectionalConstants(self):
@@ -72,7 +72,7 @@ class Board:
         otherwise
         """
         point = self.roll()
-        self.setPoint(point[0], point[1], point[2], 1)
+        self.setPoint(point[0], point[1], point[2], True)
 
         return self.checkWin(point)
 
@@ -126,7 +126,7 @@ class Board:
             streak = -1
             while cont and self.validPoint(point):
                 # Streak is over :(
-                if self.getPoint(*point) != 1:
+                if self.getPoint(*point) != True:
                     cont = False
                     continue
 
