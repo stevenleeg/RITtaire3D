@@ -40,6 +40,9 @@ def runSimulation(s, board_size, g_stats):
 
         stats["win_types"][board.win_type] += 1
 
+        if(board_size > 10 and s > 1000 and sim % 100 == 0):
+            print "\tProgress: n=%d just finished s=%d" % (board_size, sim)
+
     g_stats[board_size] = stats
 
     print "Finished simulations for n=%d" % board_size
@@ -125,7 +128,7 @@ def main():
     if(args.output != None):
         with open("output.txt", "w") as f:
             f.write(out_str)
-        print "\nWrote output to output.txt"
+        print "Wrote output to output.txt"
 
 if __name__ == "__main__":
     main()
