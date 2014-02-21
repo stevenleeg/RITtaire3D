@@ -1,5 +1,7 @@
 from board import Board
-import argparse, datetime
+import argparse, datetime, multiprocessing
+
+BLOCK_SIZE = 4
 
 parser = argparse.ArgumentParser(description = "RITtaire3D simulator")
 parser.add_argument("-n", metavar="N", dest="n", type=int,
@@ -14,6 +16,31 @@ parser.add_argument("-e", metavar="N", dest="end", type=int,
     help="End simulated range at this board size (inclusive).")
 parser.add_argument("-t", metavar="t", dest="simulations", type=int,
     help="Simulate this range t times.")
+
+def runSimulation(s, board_size, g_stats):
+    stats = {
+        "turns": 0,
+        "min": -1,
+        "max": -1,
+        "win_types": [0, 0, 0]
+    }
+
+    for sim in range(0, s + 1):
+        board = Board(board_size)
+
+        board.simulate()
+        turns = board.getTurns()
+        stats["turns"] += board.getTurns()
+        if turns > stats["max"]:
+            stats["max"] = turns
+        if turns < stats["max"]:
+            stats["min"] = turns
+
+        stats["win_types"][board.win_type] += 1
+
+    g_stats[board_size] = stats
+
+    print "Finished simulations for n=%d" % board_size
 
 def main():
     """
@@ -50,7 +77,6 @@ def main():
     # Benchmarks
     total_turns = 0
     start_dt = datetime.datetime.now()
-    stats = {}
 
     if n_start == n_end:
         print "Running size n=%d for %d simulations" % (n_start, simulations)
@@ -59,46 +85,19 @@ def main():
             n_start, n_end, simulations)
     print
 
-    # Run throught the simulations
-    for simulation in range(0, simulations):
-        for board_size in range(n_start, n_end + 1):
-            board = Board(board_size)
+    # Run the simulations
+    simulations_left = range(0, simulations)
+    pool = multiprocessing.Pool()
+    manager = multiprocessing.Manager()
+    stats = manager.dict()
+    for board_size in range(n_start, n_end):
+        pool.apply_async(runSimulation, (simulations, board_size, stats))
 
-            board.simulate()
-
-            turns = board.getTurns()
-            total_turns += turns
-            if board_size not in stats:
-                stats[board_size] = {
-                    "turns": 0,
-                    "min": -1,
-                    "max": -1,
-                    "win_types": [0, 0, 0],
-                }
-
-            # Add to number of turns for board size
-            stats[board_size]["turns"] += turns
-
-            # Is this the max/min number of turns we've dealt with?
-            if turns > stats[board_size]["max"]:
-                stats[board_size]["max"] = turns
-            if turns < stats[board_size]["min"] or stats[board_size]["min"] == -1:
-                stats[board_size]["min"] = turns
-
-            # Add to the win type
-            stats[board_size]["win_types"][board.win_type] += 1
-
-            if args.ascii:
-                print board
-            if simulations == 1:
-                if args.save_image:
-                    image = board.renderImage()
-                    image.save("output.png")
-                print "Finished board size %d" % board_size
-
-        print "Finished simulation %d" % (simulation + 1)
+    pool.close()
+    pool.join()
 
     # Calculate averages
+    total_turns = 0
     print
     print "--- Results after %d simulations ---" % simulations
     for board_size, stat in stats.items():
@@ -110,6 +109,7 @@ def main():
         print "\t2D diag wins: %d" % stat["win_types"][1]
         print "\tAxis wins:    %d" % stat["win_types"][2]
         print
+        total_turns += stat["turns"]
 
     # More benchmarks
     end_dt = datetime.datetime.now()
