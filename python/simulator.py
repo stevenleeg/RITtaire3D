@@ -6,10 +6,12 @@ BLOCK_SIZE = 4
 parser = argparse.ArgumentParser(description = "RITtaire3D simulator")
 parser.add_argument("-n", metavar="N", dest="n", type=int,
     help="Runs one simulation with board size n")
-parser.add_argument("-o", dest="save_image", action="store_true",
+parser.add_argument("-i", dest="save_image", action="store_true",
     help="Outputs a graphical representation of the board (to output.png)")
 parser.add_argument("--ascii", dest="ascii", action="store_true",
     help="Outputs an ASCII representation of each board being simulated")
+parser.add_argument("-o", dest="output", action="store_true",
+    help="Writes data output to file")
 parser.add_argument("-s", metavar="N", dest="start", type=int,
     help="Begin simulated range at this board size (inclusive).")
 parser.add_argument("-e", metavar="N", dest="end", type=int,
@@ -97,26 +99,33 @@ def main():
     pool.join()
 
     # Calculate averages
+    out_str = ""
     total_turns = 0
-    print
-    print "--- Results after %d simulations ---" % simulations
+    out_str += "--- Results after %d simulations ---\n" % simulations
     for board_size, stat in stats.items():
-        print "Stats for n=%d" % board_size
-        print "\tAvg:          %f" % (float(stat["turns"]) / float(simulations))
-        print "\tMax:          %d" % stat["max"]
-        print "\tMin:          %d" % stat["min"]
-        print "\t3D diag wins: %d" % stat["win_types"][0]
-        print "\t2D diag wins: %d" % stat["win_types"][1]
-        print "\tAxis wins:    %d" % stat["win_types"][2]
-        print
+        out_str += "Stats for n=%d\n" % board_size
+        out_str += "\tAvg:          %f\n" % (float(stat["turns"]) / float(simulations))
+        out_str += "\tMax:          %d\n" % stat["max"]
+        out_str += "\tMin:          %d\n" % stat["min"]
+        out_str += "\t3D diag wins: %d\n" % stat["win_types"][0]
+        out_str += "\t2D diag wins: %d\n" % stat["win_types"][1]
+        out_str += "\tAxis wins:    %d\n" % stat["win_types"][2]
+        out_str += "\n"
         total_turns += stat["turns"]
 
     # More benchmarks
     end_dt = datetime.datetime.now()
     delta = end_dt - start_dt
-    print "Simulation completed in %ds with %d turns (%f turns/s)" % (
+    out_str +="Simulation completed in %ds with %d turns (%f turns/s)\n" % (
         delta.seconds, total_turns,
         (delta.microseconds * 1000000) / float(total_turns))
+
+    print
+    print out_str
+    if(args.output != None):
+        with open("output.txt", "w") as f:
+            f.write(out_str)
+        print "\nWrote output to output.txt"
 
 if __name__ == "__main__":
     main()
