@@ -40,7 +40,9 @@ def runSimulation(s, board_size, g_stats):
 
         stats["win_types"][board.win_type] += 1
 
-        if(board_size > 10 and s > 1000 and sim % 100 == 0):
+        if((board_size > 10 and s > 1000 and sim % 100 == 0)):
+            print "\tProgress: n=%d just finished s=%d" % (board_size, sim)
+        elif(board_size < 10 and s > 50000 and sim % 1500 == 0):
             print "\tProgress: n=%d just finished s=%d" % (board_size, sim)
 
     g_stats[board_size] = stats
@@ -95,7 +97,7 @@ def main():
     pool = multiprocessing.Pool()
     manager = multiprocessing.Manager()
     stats = manager.dict()
-    for board_size in range(n_start, n_end):
+    for board_size in range(n_start, n_end + 1):
         pool.apply_async(runSimulation, (simulations, board_size, stats))
 
     pool.close()
