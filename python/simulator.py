@@ -6,7 +6,7 @@ BLOCK_SIZE = 4
 parser = argparse.ArgumentParser(description = "RITtaire3D simulator")
 parser.add_argument("-n", metavar="N", dest="n", type=int,
     help="Runs one simulation with board size n")
-parser.add_argument("-i", dest="save_image", action="store_true",
+parser.add_argument("--image", dest="save_image", action="store_true",
     help="Outputs a graphical representation of the board (to output.png)")
 parser.add_argument("--ascii", dest="ascii", action="store_true",
     help="Outputs an ASCII representation of each board being simulated")
@@ -19,7 +19,7 @@ parser.add_argument("-e", metavar="N", dest="end", type=int,
 parser.add_argument("-t", metavar="t", dest="simulations", type=int,
     help="Simulate this range t times.")
 
-def runSimulation(s, board_size, g_stats):
+def runSimulation(s, board_size, g_stats, opts):
     stats = {
         "turns": 0,
         "min": -1,
@@ -35,7 +35,7 @@ def runSimulation(s, board_size, g_stats):
         stats["turns"] += board.getTurns()
         if turns > stats["max"]:
             stats["max"] = turns
-        if turns < stats["max"]:
+        if turns < stats["min"] or stats["min"] == -1:
             stats["min"] = turns
 
         stats["win_types"][board.win_type] += 1
@@ -46,6 +46,13 @@ def runSimulation(s, board_size, g_stats):
             print "\tProgress: n=%d just finished s=%d" % (board_size, sim)
 
     g_stats[board_size] = stats
+
+    if opts["output_image"]:
+        image = board.renderImage()
+        image.save("output.png")
+        print "Saved image to output.png"
+    if opts["output_ascii"]:
+        print board
 
     print "Finished simulations for n=%d" % board_size
 
@@ -97,8 +104,12 @@ def main():
     pool = multiprocessing.Pool()
     manager = multiprocessing.Manager()
     stats = manager.dict()
+    opts = {
+        "output_image": True if args.save_image else False,
+        "output_ascii": True if args.ascii else False,
+    }
     for board_size in range(n_start, n_end + 1):
-        pool.apply_async(runSimulation, (simulations, board_size, stats))
+        pool.apply_async(runSimulation, (simulations, board_size, stats, opts))
 
     pool.close()
     pool.join()
@@ -109,7 +120,7 @@ def main():
     out_str += "--- Results after %d simulations ---\n" % simulations
     for board_size, stat in stats.items():
         out_str += "Stats for n=%d\n" % board_size
-        out_str += "\tAvg:          %f\n" % (float(stat["turns"]) / float(simulations))
+        out_str += "\tAvg:          %f\n" % (float(stat["turns"]) / float(simulations + 1))
         out_str += "\tMax:          %d\n" % stat["max"]
         out_str += "\tMin:          %d\n" % stat["min"]
         out_str += "\t3D diag wins: %d\n" % stat["win_types"][0]

@@ -1,6 +1,7 @@
 try:
     from PIL import Image, ImageDraw
 except ImportError:
+    print "PIL not found! Board images will not be rendered."
     pass
 import random
 
