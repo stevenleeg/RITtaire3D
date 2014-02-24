@@ -27,7 +27,7 @@ def runSimulation(s, board_size, g_stats, opts):
         "win_types": [0, 0, 0]
     }
 
-    for sim in range(0, s + 1):
+    for sim in range(0, s):
         board = Board(board_size)
 
         board.simulate()
@@ -100,7 +100,6 @@ def main():
     print
 
     # Run the simulations
-    simulations_left = range(0, simulations)
     pool = multiprocessing.Pool()
     manager = multiprocessing.Manager()
     stats = manager.dict()
@@ -108,7 +107,10 @@ def main():
         "output_image": True if args.save_image else False,
         "output_ascii": True if args.ascii else False,
     }
-    for board_size in range(n_start, n_end + 1):
+
+    if n_start == n_end:
+        n_end += 1
+    for board_size in range(n_start, n_end):
         pool.apply_async(runSimulation, (simulations, board_size, stats, opts))
 
     pool.close()
@@ -120,7 +122,7 @@ def main():
     out_str += "--- Results after %d simulations ---\n" % simulations
     for board_size, stat in stats.items():
         out_str += "Stats for n=%d\n" % board_size
-        out_str += "\tAvg:          %f\n" % (float(stat["turns"]) / float(simulations + 1))
+        out_str += "\tAvg:          %f\n" % (float(stat["turns"]) / float(simulations))
         out_str += "\tMax:          %d\n" % stat["max"]
         out_str += "\tMin:          %d\n" % stat["min"]
         out_str += "\t3D diag wins: %d\n" % stat["win_types"][0]
