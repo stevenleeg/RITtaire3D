@@ -1,0 +1,122 @@
+--- Results after 10000 simulations ---
+Stats for n=15
+	Avg:          2097.328900
+	Max:          2531
+	Min:          2159
+	3D diag wins: 56
+	2D diag wins: 1133
+	Axis wins:    8812
+
+Stats for n=16
+	Avg:          2596.473000
+	Max:          3071
+	Min:          2510
+	3D diag wins: 36
+	2D diag wins: 1045
+	Axis wins:    8920
+
+Stats for n=17
+	Avg:          3181.873100
+	Max:          3721
+	Min:          3104
+	3D diag wins: 38
+	2D diag wins: 1073
+	Axis wins:    8890
+
+Stats for n=18
+	Avg:          3843.472100
+	Max:          4460
+	Min:          3905
+	3D diag wins: 38
+	2D diag wins: 932
+	Axis wins:    9031
+
+Stats for n=19
+	Avg:          4589.713700
+	Max:          5304
+	Min:          4429
+	3D diag wins: 25
+	2D diag wins: 946
+	Axis wins:    9030
+
+Stats for n=20
+	Avg:          5440.396000
+	Max:          6224
+	Min:          5398
+	3D diag wins: 27
+	2D diag wins: 929
+	Axis wins:    9045
+
+Stats for n=21
+	Avg:          6378.757500
+	Max:          7281
+	Min:          6326
+	3D diag wins: 32
+	2D diag wins: 867
+	Axis wins:    9102
+
+Stats for n=22
+	Avg:          7433.029200
+	Max:          8407
+	Min:          7467
+	3D diag wins: 25
+	2D diag wins: 825
+	Axis wins:    9151
+
+Stats for n=23
+	Avg:          8603.648100
+	Max:          9747
+	Min:          7381
+	3D diag wins: 27
+	2D diag wins: 774
+	Axis wins:    9200
+
+Stats for n=24
+	Avg:          9876.654100
+	Max:          11012
+	Min:          9669
+	3D diag wins: 21
+	2D diag wins: 789
+	Axis wins:    9191
+
+Stats for n=25
+	Avg:          11276.237600
+	Max:          12605
+	Min:          10299
+	3D diag wins: 19
+	2D diag wins: 744
+	Axis wins:    9238
+
+Stats for n=26
+	Avg:          12817.547100
+	Max:          14316
+	Min:          14032
+	3D diag wins: 14
+	2D diag wins: 724
+	Axis wins:    9263
+
+Stats for n=27
+	Avg:          14481.066800
+	Max:          16071
+	Min:          14931
+	3D diag wins: 11
+	2D diag wins: 708
+	Axis wins:    9282
+
+Stats for n=28
+	Avg:          16278.099900
+	Max:          17869
+	Min:          16319
+	3D diag wins: 13
+	2D diag wins: 668
+	Axis wins:    9320
+
+Stats for n=29
+	Avg:          18219.355800
+	Max:          19962
+	Min:          17690
+	3D diag wins: 16
+	2D diag wins: 651
+	Axis wins:    9334
+
+Simulation completed in 14810s with 1271136529 turns (784.793747 turns/s)
